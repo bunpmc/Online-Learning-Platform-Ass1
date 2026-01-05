@@ -1,0 +1,13 @@
+# Handle line endings automatically for files detected as text
+# and leave all files detected as binary untouched.
+* text=auto eol=lf
+
+# Csharp specific
+*.cs text diff=csharp
+*.csproj text merge=union
+*.sln text merge=union
+
+# Binary files (để git không cố gắng sửa file ảnh/dll)
+*.dll binary
+*.png binary
+*.jpg binary
