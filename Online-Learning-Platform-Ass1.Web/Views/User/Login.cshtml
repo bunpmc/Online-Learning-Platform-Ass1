@@ -1,0 +1,55 @@
+@model Online_Learning_Platform_Ass1.Service.DTOs.User.UserLoginDto
+
+@{
+  ViewData["Title"] = "Login";
+}
+
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <div class="card shadow-sm mt-5">
+      <div class="card-body p-5">
+        <h2 class="card-title text-center mb-4">Login</h2>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        }
+
+        <form asp-action="Login" method="post">
+          <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+          <div class="mb-3">
+            <label for="UsernameOrEmail" class="form-label">Username or Email</label>
+            <input asp-for="UsernameOrEmail" id="UsernameOrEmail" class="form-control"
+                   placeholder="Enter your username or email"/>
+            <span asp-validation-for="UsernameOrEmail" class="text-danger"></span>
+          </div>
+
+          <div class="mb-3">
+            <label for="Password" class="form-label">Password</label>
+            <input asp-for="Password" id="Password" type="password" class="form-control"
+                   placeholder="Enter your password"/>
+            <span asp-validation-for="Password" class="text-danger"></span>
+          </div>
+
+          <div class="d-grid gap-2 mb-3">
+            <button type="submit" class="btn btn-primary btn-lg">Login</button>
+          </div>
+
+          <div class="text-center">
+            <p class="mb-0">Don't have an account? <a asp-action="Register">Register here</a></p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+  @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+  }
+}

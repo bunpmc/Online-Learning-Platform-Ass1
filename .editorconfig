@@ -68,8 +68,8 @@ dotnet_naming_style.interface_should_be_begins_with_i.required_prefix = I
 # B. Private Field có gạch dưới (_)
 # Lưu ý: Với Primary Constructor, tham số truyền vào là camelCase (vd: logger), 
 # Rider đủ thông minh để không ép cái này phải có _ nếu bạn dùng capture trực tiếp.
-dotnet_naming_rule.private_members_with_underscore.symbols  = private_fields
-dotnet_naming_rule.private_members_with_underscore.style    = prefix_underscore
+dotnet_naming_rule.private_members_with_underscore.symbols = private_fields
+dotnet_naming_rule.private_members_with_underscore.style = prefix_underscore
 dotnet_naming_rule.private_members_with_underscore.severity = suggestion
 
 dotnet_naming_symbols.private_fields.applicable_kinds = field
