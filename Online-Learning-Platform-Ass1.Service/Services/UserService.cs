@@ -68,7 +68,7 @@ public class UserService(
         if (user is null || !PasswordUtils.VerifyPasswordAsync(dto.Password, user.PasswordHash))
             return ServiceResult<UserLoginResponseDto>.FailureResultAsync("Invalid username/email or password");
 
-        var response = new UserLoginResponseDto(user.Id, user.Username, user.Email, user.CreateAt);
+        var response = new UserLoginResponseDto(user.Id, user.Username, user.Email, user.Role?.Name, user.CreateAt);
 
         return ServiceResult<UserLoginResponseDto>.SuccessResultAsync(response, "Login successful");
     }
@@ -76,6 +76,6 @@ public class UserService(
     public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
     {
         var users = await userRepository.GetAllAsync();
-        return users.Select(u => new UserDto(u.Id, u.Username, u.Email, u.CreateAt));
+        return users.Select(u => new UserDto(u.Id, u.Username, u.Email, u.Role?.Name ?? "Unassigned", u.CreateAt));
     }
 }

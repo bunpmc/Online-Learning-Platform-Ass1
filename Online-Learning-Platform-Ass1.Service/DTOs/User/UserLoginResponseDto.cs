@@ -1,3 +1,3 @@
 namespace Online_Learning_Platform_Ass1.Service.DTOs.User;
 
-public record UserLoginResponseDto(Guid Id, string Username, string Email, DateTime CreatedAt);
+public record UserLoginResponseDto(Guid Id, string Username, string Email, string? Role, DateTime CreatedAt);
