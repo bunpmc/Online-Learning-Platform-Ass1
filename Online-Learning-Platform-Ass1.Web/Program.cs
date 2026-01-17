@@ -44,6 +44,7 @@ builder.Services.AddScoped<ILessonRepository, LessonRepository>();
 
 // Add services
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IModuleService, ModuleService>();
 builder.Services.AddScoped<ILessonService, LessonService>();
 
@@ -61,13 +62,11 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
-
 app.MapStaticAssets();
 
 app.MapControllerRoute(
         "default",
-        "{controller=Lecture}/{action=Index}/{id?}")
+        "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 

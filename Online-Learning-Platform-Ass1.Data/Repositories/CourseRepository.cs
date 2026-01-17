@@ -9,12 +9,46 @@ using Online_Learning_Platform_Ass1.Data.Database.Entities;
 namespace Online_Learning_Platform_Ass1.Data.Repositories;
 public class CourseRepository : ICourseRepository
 {
-    List<Course> courses = new List<Course>();
+    private readonly List<Course> _courses = new();
+    private int _currentId = 1;
 
-    public CourseRepository()
+    public Task<IEnumerable<Course>> GetAllAsync()
     {
-        courses.Add(new Course { Id = 1, Title = "Course 1", Description = "Description for Course 1", CreatedAt = DateTime.Now });
-        courses.Add(new Course { Id = 2, Title = "Course 2", Description = "Description for Course 2", CreatedAt = DateTime.Now });
-        courses.Add(new Course { Id = 3, Title = "Course 3", Description = "Description for Course 3", CreatedAt = DateTime.Now });
+        return Task.FromResult(_courses.AsEnumerable());
+    }
+
+    public Task<Course?> GetByIdAsync(int courseId)
+    {
+        var course = _courses.FirstOrDefault(c => c.Id == courseId);
+        return Task.FromResult(course);
+    }
+
+    public Task AddAsync(Course course)
+    {
+        course.Id = _currentId++;
+        _courses.Add(course);
+        return Task.CompletedTask;
+    }
+
+    public Task UpdateAsync(Course course)
+    {
+        var existing = _courses.FirstOrDefault(c => c.Id == course.Id);
+        if (existing == null) return Task.CompletedTask;
+
+        existing.Title = course.Title;
+        existing.Description = course.Description;
+        existing.Modules = course.Modules;
+
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteAsync(int courseId)
+    {
+        var course = _courses.FirstOrDefault(c => c.Id == courseId);
+        if (course != null)
+        {
+            _courses.Remove(course);
+        }
+        return Task.CompletedTask;
     }
 }

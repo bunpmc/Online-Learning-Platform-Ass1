@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Online_Learning_Platform_Ass1.Data.Database.Entities;
 
-namespace Online_Learning_Platform_Ass1.Data.Repositories.Interfaces;
-public interface ICourseRepository
+namespace Online_Learning_Platform_Ass1.Service.Services.Interfaces;
+public interface ICourseService
 {
     Task<IEnumerable<Course>> GetAllAsync();
     Task<Course?> GetByIdAsync(int courseId);

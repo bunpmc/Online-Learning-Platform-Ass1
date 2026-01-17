@@ -1,9 +1,14 @@
-using Online_Learning_Platform_Ass1.Service.DTOs.Lesson;
-using Online_Learning_Platform_Ass1.Service.DTOs.Module;
+namespace Online_Learning_Platform_Ass1.Data.Models;
 
 public class CourseViewModel
 {
-    public IEnumerable<ModuleDTO> Modules { get; set; } = null!;
-    public IEnumerable<LessonDTO> Lessons { get; set; } = null!;
+    public int CourseId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
 
-    }
+    // bên trái: bài đang xem
+    public int? CurrentLessonId { get; set; }
+
+    //bên phải
+    public List<ModuleViewModel> Modules { get; set; } = new();
+}
