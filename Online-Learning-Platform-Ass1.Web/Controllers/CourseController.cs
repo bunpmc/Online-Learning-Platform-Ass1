@@ -1,8 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
 using Online_Learning_Platform_Ass1.Data.Models;
-using Online_Learning_Platform_Ass1.Data.Repositories.Interfaces;
 using Online_Learning_Platform_Ass1.Service.Services.Interfaces;
 
+namespace Online_Learning_Platform_Ass1.Data.Controllers;
 public class CourseController(ICourseService courseService, IModuleService moduleService, ILessonService lessonService) : Controller
 {
     private readonly ICourseService _courseService = courseService;
