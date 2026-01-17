@@ -10,7 +10,6 @@ public class CourseController(ICourseService courseService, IModuleService modul
     private readonly ILessonService _lessonService = lessonService;
 
     // ví dụ như /Course/Learn/5?lessonId=12
-    [HttpGet]
     public async Task<IActionResult> Learn(int courseId, int? lessonId)
     {
         var course = await _courseService.GetByIdAsync(courseId);
