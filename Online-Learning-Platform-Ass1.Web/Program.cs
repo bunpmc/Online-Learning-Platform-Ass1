@@ -48,6 +48,11 @@ builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IModuleService, ModuleService>();
 builder.Services.AddScoped<ILessonService, LessonService>();
 
+// Add HttpClient services
+builder.Services.AddHttpClient<IAiLessonService, AiLessonService>();
+builder.Services.AddHttpClient<ITranscriptService, TranscriptService>();
+
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

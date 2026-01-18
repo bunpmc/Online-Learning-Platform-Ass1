@@ -1,5 +1,4 @@
 namespace Online_Learning_Platform_Ass1.Data.Models;
-
 public class CourseViewModel
 {
     public int CourseId { get; set; }

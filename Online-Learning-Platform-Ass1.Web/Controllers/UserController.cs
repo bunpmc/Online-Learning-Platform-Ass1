@@ -5,8 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Online_Learning_Platform_Ass1.Service.DTOs.User;
 using Online_Learning_Platform_Ass1.Service.Services.Interfaces;
 
-namespace Online_Learning_Platform_Ass1.Data.Controllers;
-
+namespace Online_Learning_Platform_Ass1.Web.Controllers;
 public class UserController(IUserService userService) : Controller
 {
     // GET: User/Login

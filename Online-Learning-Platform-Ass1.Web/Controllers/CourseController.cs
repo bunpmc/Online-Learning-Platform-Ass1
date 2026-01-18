@@ -1,13 +1,18 @@
-using Online_Learning_Platform_Ass1.Data.Models;
-using Online_Learning_Platform_Ass1.Service.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Online_Learning_Platform_Ass1.Data.Database.Entities;
+using Online_Learning_Platform_Ass1.Data.Models;
+using Online_Learning_Platform_Ass1.Service.Services;
+using Online_Learning_Platform_Ass1.Service.Services.Interfaces;
 
-namespace Online_Learning_Platform_Ass1.Data.Controllers;
-public class CourseController(ICourseService courseService, IModuleService moduleService, ILessonService lessonService) : Controller
+namespace Online_Learning_Platform_Ass1.Web.Controllers;
+public class CourseController(ICourseService courseService, IModuleService moduleService, ILessonService lessonService, IAiLessonService aiLessonService,
+    ITranscriptService transcriptService) : Controller
 {
     private readonly ICourseService _courseService = courseService;
     private readonly IModuleService _moduleService = moduleService;
     private readonly ILessonService _lessonService = lessonService;
+    private readonly IAiLessonService _aiLessonService = aiLessonService;
+    private readonly ITranscriptService _transcriptService = transcriptService;
 
     // ví dụ như /Course/Learn/5?lessonId=1
     public async Task<IActionResult> Learn(int courseId, int? lessonId)
@@ -24,6 +29,28 @@ public class CourseController(ICourseService courseService, IModuleService modul
             Description = course.Description,
             CurrentLessonId = lessonId
         };
+
+        Lesson? currentLesson = null;
+
+        if (lessonId.HasValue)
+        {
+            currentLesson = await _lessonService.GetByIdAsync(lessonId.Value);
+
+            if (currentLesson != null)
+            {
+                vm.CurrentLesson = new LessonViewModel
+                {
+                    LessonId = currentLesson.Id,
+                    Title = currentLesson.Title,
+                    Content = currentLesson.Content,
+                    VideoUrl = currentLesson.VideoUrl,
+                    Duration = currentLesson.Duration,
+                    OrderIndex = currentLesson.OrderIndex,
+                    CreatedAt = currentLesson.CreatedAt,
+                    IsCurrent = true
+                };
+            }
+        }
 
         foreach (var module in modules)
         {
@@ -55,5 +82,27 @@ public class CourseController(ICourseService courseService, IModuleService modul
     {
         var courses = await _courseService.GetAllAsync();
         return View(courses);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AiSummary(int lessonId)
+    {
+        var lesson = await _lessonService.GetByIdAsync(lessonId);
+        if (lesson == null || string.IsNullOrEmpty(lesson.Content))
+            return BadRequest();
+
+        var summary = await _aiLessonService.GenerateSummaryAsync(lesson.Content, lesson.VideoUrl);
+        return Ok(summary);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AiAsk(int lessonId, [FromBody] string question)
+    {
+        var lesson = await _lessonService.GetByIdAsync(lessonId);
+        if (lesson == null || string.IsNullOrEmpty(lesson.Content))
+            return BadRequest();
+
+        var answer = await _aiLessonService.AskAsync(lesson.Content, question);
+        return Ok(answer);
     }
 }

@@ -14,7 +14,7 @@ public class LessonRepository : ILessonRepository
             Id = _currentId++,
             Title = "MVC là gì?",
             Content = "Giới thiệu mô hình MVC",
-            VideoUrl = "https://youtube.com/video1",
+            VideoUrl = "https://online-learning-platform.sfo3.cdn.digitaloceanspaces.com/mvclagi.mp4",
             Duration = 10,
             OrderIndex = 1,
             ModuleId = 1
@@ -25,7 +25,7 @@ public class LessonRepository : ILessonRepository
             Id = _currentId++,
             Title = "Cấu trúc project ASP.NET Core",
             Content = "Tìm hiểu thư mục Controllers, Views, Models",
-            VideoUrl = "https://youtube.com/video2",
+            VideoUrl = "https://online-learning-platform.sfo3.cdn.digitaloceanspaces.com/mvclagi.mp4",
             Duration = 15,
             OrderIndex = 2,
             ModuleId = 1
@@ -36,7 +36,7 @@ public class LessonRepository : ILessonRepository
             Id = _currentId++,
             Title = "Routing cơ bản",
             Content = "Attribute routing và convention routing",
-            VideoUrl = "https://youtube.com/video3",
+            VideoUrl = "",
             Duration = 12,
             OrderIndex = 1,
             ModuleId = 2
