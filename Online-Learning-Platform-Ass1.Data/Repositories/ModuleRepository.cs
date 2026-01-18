@@ -13,6 +13,33 @@ public class ModuleRepository : IModuleRepository
     private readonly List<CourseModule> _modules = new();
     private int _currentId = 1;
 
+    public ModuleRepository()
+    {
+        _modules.Add(new CourseModule
+        {
+            Id = _currentId++,
+            Title = "Giới thiệu ASP.NET Core",
+            OrderIndex = 1,
+            CourseId = 1
+        });
+
+        _modules.Add(new CourseModule
+        {
+            Id = _currentId++,
+            Title = "MVC cơ bản",
+            OrderIndex = 2,
+            CourseId = 1
+        });
+
+        _modules.Add(new CourseModule
+        {
+            Id = _currentId++,
+            Title = "Entity Framework Core",
+            OrderIndex = 1,
+            CourseId = 2
+        });
+    }
+
     public Task<IEnumerable<CourseModule>> GetAllAsync()
     {
         return Task.FromResult(_modules.AsEnumerable());

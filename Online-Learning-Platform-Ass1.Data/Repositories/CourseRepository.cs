@@ -12,6 +12,43 @@ public class CourseRepository : ICourseRepository
     private readonly List<Course> _courses = new();
     private int _currentId = 1;
 
+    public CourseRepository()
+    {
+        var course = new Course
+        {
+            Id = _currentId++,
+            Title = "ASP.NET Core",
+            Description = "MVC từ A đến Z",
+            Modules = new List<CourseModule>()
+        };
+
+        var module1 = new CourseModule
+        {
+            Id = 1,
+            Title = "Giới thiệu",
+            CourseId = course.Id,
+            Lessons = new List<Lesson>()
+        };
+
+        module1.Lessons.Add(new Lesson
+        {
+            Id = 1,
+            Title = "MVC là gì?",
+            ModuleId = module1.Id
+        });
+
+        module1.Lessons.Add(new Lesson
+        {
+            Id = 2,
+            Title = "Cấu trúc project",
+            ModuleId = module1.Id
+        });
+
+        course.Modules.Add(module1);
+        _courses.Add(course);
+    }
+
+
     public Task<IEnumerable<Course>> GetAllAsync()
     {
         return Task.FromResult(_courses.AsEnumerable());

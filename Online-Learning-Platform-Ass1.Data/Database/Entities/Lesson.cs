@@ -14,7 +14,7 @@ public class Lesson
 
     public string VideoUrl { get; set; } = string.Empty;
 
-    public string Duration { get; set; } = string.Empty;
+    public int Duration { get; set; }
     public int OrderIndex { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public CourseModule? Module { get; set; }

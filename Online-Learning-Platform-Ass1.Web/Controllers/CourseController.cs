@@ -9,14 +9,13 @@ public class CourseController(ICourseService courseService, IModuleService modul
     private readonly IModuleService _moduleService = moduleService;
     private readonly ILessonService _lessonService = lessonService;
 
-    // ví dụ như /Course/Learn/5?lessonId=12
-    public async Task<IActionResult> Learn(int courseId, int? lessonId)
+    // ví dụ như /Course/Learn/5?lessonId=1
+    public async Task<IActionResult> Learn(int id, int? lessonId)
     {
-        var course = await _courseService.GetByIdAsync(courseId);
-        if (course == null)
-            return NotFound();
+        var course = await _courseService.GetByIdAsync(id);
+        if (course == null) return NotFound();
 
-        var modules = await _moduleService.GetByCourseIdAsync(courseId);
+        var modules = await _moduleService.GetByCourseIdAsync(id);
 
         var vm = new CourseViewModel
         {

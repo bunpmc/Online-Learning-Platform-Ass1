@@ -7,6 +7,42 @@ public class LessonRepository : ILessonRepository
     private readonly List<Lesson> _lessons = new();
     private int _currentId = 1;
 
+    public LessonRepository()
+    {
+        _lessons.Add(new Lesson
+        {
+            Id = _currentId++,
+            Title = "MVC là gì?",
+            Content = "Giới thiệu mô hình MVC",
+            VideoUrl = "https://youtube.com/video1",
+            Duration = 10,
+            OrderIndex = 1,
+            ModuleId = 1
+        });
+
+        _lessons.Add(new Lesson
+        {
+            Id = _currentId++,
+            Title = "Cấu trúc project ASP.NET Core",
+            Content = "Tìm hiểu thư mục Controllers, Views, Models",
+            VideoUrl = "https://youtube.com/video2",
+            Duration = 15,
+            OrderIndex = 2,
+            ModuleId = 1
+        });
+
+        _lessons.Add(new Lesson
+        {
+            Id = _currentId++,
+            Title = "Routing cơ bản",
+            Content = "Attribute routing và convention routing",
+            VideoUrl = "https://youtube.com/video3",
+            Duration = 12,
+            OrderIndex = 1,
+            ModuleId = 2
+        });
+    }
+
     public Task<IEnumerable<Lesson>> GetAllAsync()
     {
         return Task.FromResult(_lessons.AsEnumerable());
