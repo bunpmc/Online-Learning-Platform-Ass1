@@ -1,4 +1,5 @@
 using Online_Learning_Platform_Ass1.Data.Repositories.Interfaces;
+using Online_Learning_Platform_Ass1.Service.Services.Interfaces;
 
 namespace Online_Learning_Platform_Ass1.Service.Services;
 
@@ -15,15 +16,14 @@ public class LessonService(ILessonRepository lessonRepository) : ILessonService
             Id = l.Id,
             ModuleId = l.ModuleId,
             Title = l.Title,
-            Content = l.Content,
-            VideoUrl = l.VideoUrl,
+            Type = l.Type,
+            ContentUrl = l.ContentUrl,
             Duration = l.Duration,
-            OrderIndex = l.OrderIndex,
-            CreatedAt = l.CreatedAt
+            OrderIndex = l.OrderIndex
         });
     }
 
-    public async Task<LessonDTO?> GetByIdAsync(int lessonId)
+    public async Task<LessonDTO?> GetByIdAsync(Guid lessonId)
     {
         var l = await _lessonRepository.GetByIdAsync(lessonId);
         if (l == null) return null;
@@ -33,15 +33,14 @@ public class LessonService(ILessonRepository lessonRepository) : ILessonService
             Id = l.Id,
             ModuleId = l.ModuleId,
             Title = l.Title,
-            Content = l.Content,
-            VideoUrl = l.VideoUrl,
+            Type = l.Type,
+            ContentUrl = l.ContentUrl,
             Duration = l.Duration,
-            OrderIndex = l.OrderIndex,
-            CreatedAt = l.CreatedAt
+            OrderIndex = l.OrderIndex
         };
     }
 
-    public async Task<IEnumerable<LessonDTO>> GetByModuleIdAsync(int moduleId)
+    public async Task<IEnumerable<LessonDTO>> GetByModuleIdAsync(Guid moduleId)
     {
         var lessons = await _lessonRepository.GetByModuleIdAsync(moduleId);
 
@@ -50,11 +49,10 @@ public class LessonService(ILessonRepository lessonRepository) : ILessonService
             Id = l.Id,
             ModuleId = l.ModuleId,
             Title = l.Title,
-            Content = l.Content,
-            VideoUrl = l.VideoUrl,
+            Type = l.Type,
+            ContentUrl = l.ContentUrl,
             Duration = l.Duration,
-            OrderIndex = l.OrderIndex,
-            CreatedAt = l.CreatedAt
+            OrderIndex = l.OrderIndex
         });
     }
 
@@ -65,8 +63,8 @@ public class LessonService(ILessonRepository lessonRepository) : ILessonService
             throw new Exception("Lesson not found");
 
         lesson.Title = dto.Title;
-        lesson.Content = dto.Content;
-        lesson.VideoUrl = dto.VideoUrl;
+        lesson.Type = dto.Type;
+        lesson.ContentUrl = dto.ContentUrl;
         lesson.Duration = dto.Duration;
         lesson.OrderIndex = dto.OrderIndex;
 

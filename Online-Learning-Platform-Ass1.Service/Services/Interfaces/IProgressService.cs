@@ -1,14 +1,15 @@
-using Online_Learning_Platform_Ass1.Service.DTOs.Lesson;
+using Online_Learning_Platform_Ass1.Data.Database.Entities;
 
 namespace Online_Learning_Platform_Ass1.Service.Services.Interfaces;
 
 public interface IProgressService
 {
-    Task<ProgressDTO?> GetLessonProgressAsync(int enrollmentId, int lessonId);
-    Task<IEnumerable<ProgressDTO>> GetCourseProgressAsync(int enrollmentId);
+    Task<LessonProgress> GetLessonProgressAsync(Guid enrollmentId, Guid? lessonId);
+    Task<IEnumerable<LessonProgress>> GetCourseProgressAsync(Guid enrollmentId);
 
-    Task UpdateWatchedPositionAsync(int enrollmentId, int lessonId, int watchedPosition);
-    Task CompleteLessonAsync(int enrollmentId, int lessonId);
+    Task UpdateWatchedPositionAsync(Guid enrollmentId, Guid lessonId, int watchedPosition);
+    Task CompleteLessonAsync(Guid enrollmentId, Guid lessonId);
 
-    Task<double> GetCourseCompletionPercentageAsync(int enrollmentId);
+    Task<double> GetCourseCompletionPercentageAsync(Guid enrollmentId);
+
 }

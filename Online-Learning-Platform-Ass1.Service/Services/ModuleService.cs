@@ -22,7 +22,7 @@ public class ModuleService(IModuleRepository moduleRepository) : IModuleService
         });
     }
 
-    public async Task<ModuleDTO?> GetByIdAsync(int moduleId)
+    public async Task<ModuleDTO?> GetByIdAsync(Guid moduleId)
     {
         var m = await _moduleRepository.GetByIdAsync(moduleId);
         if (m == null) return null;
@@ -37,7 +37,7 @@ public class ModuleService(IModuleRepository moduleRepository) : IModuleService
         };
     }
 
-    public async Task<IEnumerable<ModuleDTO>> GetByCourseIdAsync(int courseId)
+    public async Task<IEnumerable<ModuleDTO>> GetByCourseIdAsync(Guid courseId)
     {
         var modules = await _moduleRepository.GetByCourseIdAsync(courseId);
 

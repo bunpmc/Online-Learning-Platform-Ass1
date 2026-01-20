@@ -1,114 +1,106 @@
-using Online_Learning_Platform_Ass1.Data.Database.Entities;
-using Online_Learning_Platform_Ass1.Data.Repositories.Interfaces;
-
-namespace Online_Learning_Platform_Ass1.Data.Repositories;
-
-public class ProgressRepository(ILessonRepository lessonRepository ) : IProgressRepository
+public class ProgressRepository : IProgressRepository
 {
     private readonly List<LessonProgress> _progresses = new();
-    private readonly ILessonRepository _lessonRepository = lessonRepository;
-    private int _currentId = 1;
 
-
-    public async Task<LessonProgress?> GetByIdAsync(int progressId)
-    {
-        return await Task.Run(() =>
+    public Task<LessonProgress?> GetByIdAsync(Guid progressId)
+        => Task.FromResult(
             _progresses.FirstOrDefault(p => p.Id == progressId)
         );
-    }
 
-    public async Task<LessonProgress?> GetByEnrollmentAndLessonAsync(int enrollmentId, int lessonId)
-    {
-        return await Task.Run(() =>
+    public Task<LessonProgress?> GetByEnrollmentAndLessonAsync(Guid enrollmentId, Guid? lessonId)
+        => Task.FromResult(
             _progresses.FirstOrDefault(p =>
                 p.EnrollmentId == enrollmentId &&
                 p.LessonId == lessonId)
         );
-    }
 
-    public async Task<IEnumerable<LessonProgress>> GetByEnrollmentIdAsync(int enrollmentId)
-    {
-        return await Task.Run(() =>
+    public Task<IEnumerable<LessonProgress>> GetByEnrollmentIdAsync(Guid enrollmentId)
+        => Task.FromResult(
             _progresses
                 .Where(p => p.EnrollmentId == enrollmentId)
                 .AsEnumerable()
         );
+
+    public Task CreateAsync(Guid enrollmentId, Guid lessonId, int watchedPosition)
+    {
+        _progresses.Add(new LessonProgress
+        {
+            Id = Guid.NewGuid(),
+            EnrollmentId = enrollmentId,
+            LessonId = lessonId,
+            WatchedPosition = watchedPosition,
+            IsCompleted = false,
+            AiSummaryStatus = AiSummaryStatus.None,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+
+        return Task.CompletedTask;
     }
 
-    public async Task AddAsync(LessonProgress progress)
+    public Task CreateAndCompleteAsync(Guid enrollmentId, Guid lessonId)
     {
-        await Task.Run(() =>
+        _progresses.Add(new LessonProgress
         {
-            progress.Id = _currentId++;
-            _progresses.Add(progress);
+            Id = Guid.NewGuid(),
+            EnrollmentId = enrollmentId,
+            LessonId = lessonId,
+            WatchedPosition = 0,
+            IsCompleted = true,
+            AiSummaryStatus = AiSummaryStatus.None,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         });
+
+        return Task.CompletedTask;
     }
 
-    public async Task UpdateAsync(LessonProgress progress)
+    public Task UpdateWatchedPositionAsync(
+        Guid enrollmentId,
+        Guid lessonId,
+        int watchedPosition)
     {
-        await Task.Run(() =>
-        {
-            var existing = _progresses.FirstOrDefault(p => p.Id == progress.Id);
-            if (existing == null) return;
+        var progress = _progresses.FirstOrDefault(p =>
+            p.EnrollmentId == enrollmentId &&
+            p.LessonId == lessonId);
 
-            existing.EnrollmentId = progress.EnrollmentId;
-            existing.LessonId = progress.LessonId;
-            existing.IsCompleted = progress.IsCompleted;
-            existing.WatchedPosition = progress.WatchedPosition;
-        });
+        if (progress != null)
+        {
+            progress.WatchedPosition = watchedPosition;
+            progress.UpdatedAt = DateTime.UtcNow;
+        }
+
+        return Task.CompletedTask;
     }
 
-    public async Task MarkCompletedAsync(int enrollmentId, int lessonId)
+    public Task MarkCompletedAsync(Guid enrollmentId, Guid lessonId)
     {
-        await Task.Run(() =>
-        {
-            var progress = _progresses.FirstOrDefault(p =>
-                p.EnrollmentId == enrollmentId &&
-                p.LessonId == lessonId);
+        var progress = _progresses.FirstOrDefault(p =>
+            p.EnrollmentId == enrollmentId &&
+            p.LessonId == lessonId);
 
-            if (progress != null)
-            {
-                progress.IsCompleted = true;
-            }
-        });
+        if (progress != null)
+        {
+            progress.IsCompleted = true;
+            progress.UpdatedAt = DateTime.UtcNow;
+        }
+
+        return Task.CompletedTask;
     }
 
-    public async Task UpdateWatchedPositionAsync(int enrollmentId, int lessonId, int lastWatchedPosition)
+    public Task UpdateAsync(LessonProgress progress)
     {
-        await Task.Run(() =>
-        {
-            var progress = _progresses.FirstOrDefault(p =>
-                p.EnrollmentId == enrollmentId &&
-                p.LessonId == lessonId);
+        var existing = _progresses.FirstOrDefault(p => p.Id == progress.Id);
+        if (existing == null)
+            return Task.CompletedTask;
 
-            if (progress == null)
-            {
-                progress = new LessonProgress
-                {
-                    Id = _currentId++,
-                    EnrollmentId = enrollmentId,
-                    LessonId = lessonId,
-                    WatchedPosition = lastWatchedPosition,
-                    IsCompleted = false
-                };
-                _progresses.Add(progress);
-            }
-            else
-            {
-                progress.WatchedPosition = lastWatchedPosition;
-            }
-        });
-    }
+        existing.WatchedPosition = progress.WatchedPosition;
+        existing.IsCompleted = progress.IsCompleted;
+        existing.Transcript = progress.Transcript;
+        existing.AiSummary = progress.AiSummary;
+        existing.AiSummaryStatus = progress.AiSummaryStatus;
+        existing.UpdatedAt = DateTime.UtcNow;
 
-    public async Task DeleteAsync(int progressId)
-    {
-        await Task.Run(() =>
-        {
-            var progress = _progresses.FirstOrDefault(p => p.Id == progressId);
-            if (progress != null)
-            {
-                _progresses.Remove(progress);
-            }
-        });
+        return Task.CompletedTask;
     }
 }

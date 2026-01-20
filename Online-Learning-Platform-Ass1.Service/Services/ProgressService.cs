@@ -1,75 +1,93 @@
-using Online_Learning_Platform_Ass1.Data.Repositories.Interfaces;
 using Online_Learning_Platform_Ass1.Service.DTOs.Lesson;
 using Online_Learning_Platform_Ass1.Service.Services.Interfaces;
 
 namespace Online_Learning_Platform_Ass1.Service.Services;
 
-public class ProgressService(IProgressRepository progressRepository, ILessonRepository lessonRepository) : IProgressService
+public class ProgressService(IProgressRepository progressRepository) : IProgressService
 {
     private readonly IProgressRepository _progressRepository = progressRepository;
-    private readonly ILessonRepository _lessonRepository = lessonRepository;
 
-    public async Task<ProgressDTO?> GetLessonProgressAsync(int enrollmentId, int lessonId)
+    public async Task<ProgressDTO?> GetLessonProgressAsync(Guid enrollmentId, Guid? lessonId)
     {
-        var progress = await _progressRepository.GetByEnrollmentAndLessonAsync(enrollmentId, lessonId);
+        var progress =
+            await _progressRepository.GetByEnrollmentAndLessonAsync(enrollmentId, lessonId);
 
-        if (progress == null) return null;
+        return progress == null ? null : MapToDto(progress);
+    }
 
-        return new ProgressDTO
+    public async Task<IEnumerable<ProgressDTO>> GetCourseProgressAsync(Guid enrollmentId)
+    {
+        var progresses =
+            await _progressRepository.GetByEnrollmentIdAsync(enrollmentId);
+
+        return progresses.Select(MapToDto);
+    }
+
+    public async Task UpdateWatchedPositionAsync(
+        Guid enrollmentId,
+        Guid lessonId,
+        int watchedPosition)
+    {
+        var progress =
+            await _progressRepository.GetByEnrollmentAndLessonAsync(enrollmentId, lessonId);
+
+        if (progress == null)
+        {
+            await _progressRepository.CreateAsync(
+                enrollmentId,
+                lessonId,
+                watchedPosition);
+            return;
+        }
+
+        await _progressRepository.UpdateWatchedPositionAsync(
+            enrollmentId,
+            lessonId,
+            watchedPosition);
+    }
+
+    public async Task CompleteLessonAsync(Guid enrollmentId, Guid lessonId)
+    {
+        var progress =
+            await _progressRepository.GetByEnrollmentAndLessonAsync(enrollmentId, lessonId);
+
+        if (progress == null)
+        {
+            await _progressRepository.CreateAndCompleteAsync(
+                enrollmentId,
+                lessonId);
+            return;
+        }
+
+        await _progressRepository.MarkCompletedAsync(
+            enrollmentId,
+            lessonId);
+    }
+
+    public async Task<double> GetCourseCompletionPercentageAsync(Guid enrollmentId)
+    {
+        var progresses =
+            (await _progressRepository.GetByEnrollmentIdAsync(enrollmentId)).ToList();
+
+        if (progresses.Count == 0)
+            return 0;
+
+        return progresses.Count(p => p.IsCompleted) * 100.0 / progresses.Count;
+    }
+
+
+    private static ProgressDTO MapToDto(LessonProgress progress)
+        => new()
         {
             Id = progress.Id,
             EnrollmentId = progress.EnrollmentId,
             LessonId = progress.LessonId,
             WatchedPosition = progress.WatchedPosition,
             AiSummary = progress.AiSummary,
-            AiSummaryStatus = progress.AiSummaryStatus,
+            AiSummaryStatus = (DTOs.Lesson.AiSummaryStatus)progress.AiSummaryStatus,
             Transcript = progress.Transcript,
             IsCompleted = progress.IsCompleted,
             UpdatedAt = progress.UpdatedAt
         };
-    }
-
-    public async Task<IEnumerable<ProgressDTO>> GetCourseProgressAsync(int enrollmentId)
-    {
-        var progresses = await _progressRepository.GetByEnrollmentIdAsync(enrollmentId);
-
-        return progresses.Select(p => new ProgressDTO
-        {
-            Id = p.Id,
-            EnrollmentId = p.EnrollmentId,
-            LessonId = p.LessonId,
-            WatchedPosition = p.WatchedPosition,
-            IsCompleted = p.IsCompleted,
-            UpdatedAt = p.UpdatedAt
-        });
-    }
-
-    public async Task UpdateWatchedPositionAsync(int enrollmentId, int lessonId, int watchedPosition)
-    {
-        await _progressRepository.UpdateWatchedPositionAsync(
-            enrollmentId,
-            lessonId,
-            watchedPosition
-        );
-    }
-
-    public async Task CompleteLessonAsync(int enrollmentId, int lessonId)
-    {
-        await _progressRepository.MarkCompletedAsync(enrollmentId, lessonId);
-    }
-
-    public async Task<double> GetCourseCompletionPercentageAsync(int enrollmentId)
-    {
-        var progresses =
-            (await _progressRepository.GetByEnrollmentIdAsync(enrollmentId))
-            .ToList();
-
-        if (!progresses.Any())
-            return 0;
-
-        var completedCount = progresses.Count(p => p.IsCompleted);
-        var totalCount = progresses.Count;
-
-        return (double)completedCount / totalCount * 100;
-    }
 }
+

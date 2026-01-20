@@ -9,9 +9,9 @@ namespace Online_Learning_Platform_Ass1.Data.Repositories.Interfaces;
 public interface IModuleRepository
 {
     Task<IEnumerable<CourseModule>> GetAllAsync();
-    Task<CourseModule?> GetByIdAsync(int moduleId);
-    Task<IEnumerable<CourseModule>> GetByCourseIdAsync(int courseId);
+    Task<CourseModule?> GetByIdAsync(Guid moduleId);
+    Task<IEnumerable<CourseModule>> GetByCourseIdAsync(Guid courseId);
     Task AddAsync(CourseModule module);
     Task UpdateAsync(CourseModule module);
-    Task DeleteAsync(int moduleId);
+    Task DeleteAsync(Guid moduleId);
 }

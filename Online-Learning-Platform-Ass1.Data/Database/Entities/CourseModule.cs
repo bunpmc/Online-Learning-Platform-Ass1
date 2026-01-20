@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace Online_Learning_Platform_Ass1.Data.Database.Entities;
 public class CourseModule 
 {
-    public int Id { get; set; }
-    public int CourseId { get; set; }
+    public Guid Id { get; set; }
+    public Guid CourseId { get; set; }
     public string Title { get; set; } = string.Empty;
     public int OrderIndex { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

@@ -2,59 +2,57 @@ using Online_Learning_Platform_Ass1.Data.Database.Entities;
 using Online_Learning_Platform_Ass1.Data.Repositories.Interfaces;
 
 namespace Online_Learning_Platform_Ass1.Data.Repositories;
+
 public class LessonRepository : ILessonRepository
 {
     private readonly List<Lesson> _lessons = new();
-    private int _currentId = 1;
+
+    private readonly Guid _module1 = Guid.Parse("11111111-1111-1111-1111-111111111111");
+    private readonly Guid _module2 = Guid.Parse("22222222-2222-2222-2222-222222222222");
 
     public LessonRepository()
     {
         _lessons.Add(new Lesson
         {
-            Id = _currentId++,
+            Id = Guid.NewGuid(),
+            ModuleId = _module1,
             Title = "MVC là gì?",
-            Content = "Giới thiệu mô hình MVC",
-            VideoUrl = "https://online-learning-platform.sfo3.cdn.digitaloceanspaces.com/mvclagi.mp4",
-            Duration = 10,
-            OrderIndex = 1,
-            ModuleId = 1
+            Type = "video",
+            ContentUrl = "https://online-learning-platform.sfo3.cdn.digitaloceanspaces.com/mvclagi.mp4",
+            Duration = 600,
+            OrderIndex = 1
         });
 
         _lessons.Add(new Lesson
         {
-            Id = _currentId++,
+            Id = Guid.NewGuid(),
+            ModuleId = _module1,
             Title = "Cấu trúc project ASP.NET Core",
-            Content = "Tìm hiểu thư mục Controllers, Views, Models",
-            VideoUrl = "https://online-learning-platform.sfo3.cdn.digitaloceanspaces.com/mvclagi.mp4",
-            Duration = 15,
-            OrderIndex = 2,
-            ModuleId = 1
+            Type = "video",
+            ContentUrl = "https://online-learning-platform.sfo3.cdn.digitaloceanspaces.com/project-structure.mp4",
+            Duration = 900,
+            OrderIndex = 2
         });
 
         _lessons.Add(new Lesson
         {
-            Id = _currentId++,
+            Id = Guid.NewGuid(),
+            ModuleId = _module2,
             Title = "Routing cơ bản",
-            Content = "Attribute routing và convention routing",
-            VideoUrl = "",
-            Duration = 12,
-            OrderIndex = 1,
-            ModuleId = 2
+            Type = "text",
+            ContentUrl = null,
+            Duration = null,
+            OrderIndex = 1
         });
     }
 
     public Task<IEnumerable<Lesson>> GetAllAsync()
-    {
-        return Task.FromResult(_lessons.AsEnumerable());
-    }
+        => Task.FromResult(_lessons.AsEnumerable());
 
-    public Task<Lesson?> GetByIdAsync(int lessonId)
-    {
-        var lesson = _lessons.FirstOrDefault(l => l.Id == lessonId);
-        return Task.FromResult(lesson);
-    }
+    public Task<Lesson?> GetByIdAsync(Guid lessonId)
+        => Task.FromResult(_lessons.FirstOrDefault(l => l.Id == lessonId));
 
-    public Task<IEnumerable<Lesson>> GetByModuleIdAsync(int moduleId)
+    public Task<IEnumerable<Lesson>> GetByModuleIdAsync(Guid moduleId)
     {
         var lessons = _lessons
             .Where(l => l.ModuleId == moduleId)
@@ -66,7 +64,7 @@ public class LessonRepository : ILessonRepository
 
     public Task AddAsync(Lesson lesson)
     {
-        lesson.Id = _currentId++;
+        lesson.Id = Guid.NewGuid();
         _lessons.Add(lesson);
         return Task.CompletedTask;
     }
@@ -77,8 +75,8 @@ public class LessonRepository : ILessonRepository
         if (existing == null) return Task.CompletedTask;
 
         existing.Title = lesson.Title;
-        existing.Content = lesson.Content;
-        existing.VideoUrl = lesson.VideoUrl;
+        existing.Type = lesson.Type;
+        existing.ContentUrl = lesson.ContentUrl;
         existing.Duration = lesson.Duration;
         existing.OrderIndex = lesson.OrderIndex;
         existing.ModuleId = lesson.ModuleId;
@@ -86,13 +84,11 @@ public class LessonRepository : ILessonRepository
         return Task.CompletedTask;
     }
 
-    public Task DeleteAsync(int lessonId)
+    public Task DeleteAsync(Guid lessonId)
     {
         var lesson = _lessons.FirstOrDefault(l => l.Id == lessonId);
         if (lesson != null)
-        {
             _lessons.Remove(lesson);
-        }
 
         return Task.CompletedTask;
     }

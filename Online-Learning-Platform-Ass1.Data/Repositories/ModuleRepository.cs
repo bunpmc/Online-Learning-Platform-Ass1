@@ -51,7 +51,7 @@ public class ModuleRepository : IModuleRepository
         return Task.FromResult(module);
     }
 
-    public Task<IEnumerable<CourseModule>> GetByCourseIdAsync(int courseId)
+    public Task<IEnumerable<CourseModule>> GetByCourseIdAsync(Guid courseId)
     {
         var modules = _modules
             .Where(m => m.CourseId == courseId)
@@ -81,7 +81,7 @@ public class ModuleRepository : IModuleRepository
         return Task.CompletedTask;
     }
 
-    public Task DeleteAsync(int moduleId)
+    public Task DeleteAsync(Guid moduleId)
     {
         var module = _modules.FirstOrDefault(m => m.Id == moduleId);
         if (module != null)
