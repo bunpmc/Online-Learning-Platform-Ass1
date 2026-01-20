@@ -2,74 +2,83 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using Online_Learning_Platform_Ass1.Data.Database.Entities;
+using Online_Learning_Platform_Ass1.Data.Repositories.Interfaces;
 using Online_Learning_Platform_Ass1.Service.DTOs.Lesson;
 using Online_Learning_Platform_Ass1.Service.Services.Interfaces;
 
 namespace Online_Learning_Platform_Ass1.Service.Services;
 
-public class AiLessonService(HttpClient httpClient, ITranscriptService transcriptService, ILessonService lessonService) : IAiLessonService
+public class AiLessonService(HttpClient httpClient, ITranscriptService transcriptService, IProgressRepository progressRepository, ILessonRepository lessonRepository) : IAiLessonService
 {
     private readonly HttpClient _http = httpClient;
     private readonly ITranscriptService _transcriptService = transcriptService;
-    private readonly ILessonService _lessonService = lessonService;
+    private readonly IProgressRepository _progressRepository = progressRepository;
+    private readonly ILessonRepository _lessonRepository = lessonRepository;
 
     private const string _aiEndpoint = "https://api.groq.com/openai/v1/chat/completions";
     private string _groqApiKey = Environment.GetEnvironmentVariable("GroqAPIKey__Key") ?? "";
 
-    public async Task<string> GenerateSummaryAsync(LessonDTO lesson)
+    public async Task<string> GenerateSummaryAsync(ProgressDTO dto)
     {
-        if (lesson.AiSummaryStatus == AiSummaryStatus.Done)
-            return lesson.AiSummary!;
+        var progress = await _progressRepository.GetByIdAsync(dto.Id)
+            ?? throw new Exception("Progress not found");
 
-        if (lesson.AiSummaryStatus == AiSummaryStatus.Processing)
+        if (progress.AiSummaryStatus == AiSummaryStatus.Done)
+            return progress.AiSummary!;
+
+        if (progress.AiSummaryStatus == AiSummaryStatus.Processing)
             return "Đợi xíu, AI đang tóm tắt bài này...";
 
-        lesson.AiSummaryStatus = AiSummaryStatus.Processing;
-        await _lessonService.UpdateAsync(lesson);
+        progress.AiSummaryStatus = AiSummaryStatus.Processing;
+        await _progressRepository.UpdateAsync(progress);
 
         try
         {
-            var transcript = await EnsureTranscriptAsync(lesson);
+            var transcript = await EnsureTranscriptAsync(progress);
             var summary = await CallAiSummary(transcript);
 
-            lesson.AiSummary = summary;
-            lesson.AiSummaryStatus = AiSummaryStatus.Done;
-            await _lessonService.UpdateAsync(lesson);
+            progress.AiSummary = summary;
+            progress.AiSummaryStatus = AiSummaryStatus.Done;
+            await _progressRepository.UpdateAsync(progress);
 
             return summary;
         }
         catch
         {
-            lesson.AiSummaryStatus = AiSummaryStatus.Failed;
-            await _lessonService.UpdateAsync(lesson);
+            progress.AiSummaryStatus = AiSummaryStatus.Failed;
+            await _progressRepository.UpdateAsync(progress);
             throw;
         }
     }
 
-    public async Task<string> AskAsync(LessonDTO lesson, string question)
+    public async Task<string> AskAsync(ProgressDTO lessonProgress, string question)
     {
-        var context = !string.IsNullOrWhiteSpace(lesson.AiSummary)
-            ? lesson.AiSummary!
-            : await EnsureTranscriptAsync(lesson);
+        var progress = await _progressRepository.GetByIdAsync(lessonProgress.Id)
+            ?? throw new Exception("Progress not found");
+        var context = !string.IsNullOrWhiteSpace(lessonProgress.AiSummary)
+            ? lessonProgress.AiSummary!
+            : await EnsureTranscriptAsync(progress);
 
         return await CallAiAsk(context, question);
     }
 
-    private async Task<string> EnsureTranscriptAsync(LessonDTO lesson)
+    private async Task<string> EnsureTranscriptAsync(LessonProgress progress)
     {
-        if (!string.IsNullOrWhiteSpace(lesson.Transcript))
-            return lesson.Transcript!;
 
-        var transcript =
-            await _transcriptService.GenerateTranscriptFromVideoAsync(
-                lesson.VideoUrl
-            );
+        if (!string.IsNullOrWhiteSpace(progress.Transcript))
+            return progress.Transcript!;
 
-        lesson.Transcript = transcript;
-        await _lessonService.UpdateAsync(lesson);
+        var lesson = await _lessonRepository.GetByIdAsync(progress.LessonId);
+
+        var transcript = await _transcriptService
+            .GenerateTranscriptFromVideoAsync(lesson!.VideoUrl);
+
+        progress.Transcript = transcript;
+        await _progressRepository.UpdateAsync(progress);
 
         return transcript;
     }
+
 
     private async Task<string> CallAiAsk(string context, string question)
     {
@@ -128,13 +137,16 @@ public class AiLessonService(HttpClient httpClient, ITranscriptService transcrip
     private async Task<string> SendToAi(object payload)
     {
         var json = JsonSerializer.Serialize(payload);
-        using var content =
-            new StringContent(json, Encoding.UTF8, "application/json");
 
-        _http.DefaultRequestHeaders.Authorization =
+        using var request = new HttpRequestMessage(HttpMethod.Post, _aiEndpoint)
+        {
+            Content = new StringContent(json, Encoding.UTF8, "application/json")
+        };
+
+        request.Headers.Authorization =
             new AuthenticationHeaderValue("Bearer", _groqApiKey);
 
-        var response = await _http.PostAsync(_aiEndpoint, content);
+        var response = await _http.SendAsync(request);
         response.EnsureSuccessStatusCode();
 
         var responseJson = await response.Content.ReadAsStringAsync();

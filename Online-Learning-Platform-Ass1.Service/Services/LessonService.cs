@@ -18,9 +18,6 @@ public class LessonService(ILessonRepository lessonRepository) : ILessonService
             Content = l.Content,
             VideoUrl = l.VideoUrl,
             Duration = l.Duration,
-            AiSummary = l.AiSummary,
-            Transcript = l.Transcript,
-            AiSummaryStatus = l.AiSummaryStatus,
             OrderIndex = l.OrderIndex,
             CreatedAt = l.CreatedAt
         });
@@ -39,9 +36,6 @@ public class LessonService(ILessonRepository lessonRepository) : ILessonService
             Content = l.Content,
             VideoUrl = l.VideoUrl,
             Duration = l.Duration,
-            AiSummary = l.AiSummary,
-            Transcript = l.Transcript,
-            AiSummaryStatus = l.AiSummaryStatus,
             OrderIndex = l.OrderIndex,
             CreatedAt = l.CreatedAt
         };
@@ -59,9 +53,6 @@ public class LessonService(ILessonRepository lessonRepository) : ILessonService
             Content = l.Content,
             VideoUrl = l.VideoUrl,
             Duration = l.Duration,
-            AiSummary = l.AiSummary,
-            Transcript = l.Transcript,
-            AiSummaryStatus = l.AiSummaryStatus,
             OrderIndex = l.OrderIndex,
             CreatedAt = l.CreatedAt
         });
@@ -77,9 +68,6 @@ public class LessonService(ILessonRepository lessonRepository) : ILessonService
         lesson.Content = dto.Content;
         lesson.VideoUrl = dto.VideoUrl;
         lesson.Duration = dto.Duration;
-        lesson.AiSummary = dto.AiSummary;
-        lesson.Transcript = dto.Transcript;
-        lesson.AiSummaryStatus = dto.AiSummaryStatus;
         lesson.OrderIndex = dto.OrderIndex;
 
         await _lessonRepository.UpdateAsync(lesson);

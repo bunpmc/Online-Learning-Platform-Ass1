@@ -11,8 +11,7 @@ public class ProgressService(IProgressRepository progressRepository, ILessonRepo
 
     public async Task<ProgressDTO?> GetLessonProgressAsync(int enrollmentId, int lessonId)
     {
-        var progress =
-            await _progressRepository.GetByEnrollmentAndLessonAsync(enrollmentId, lessonId);
+        var progress = await _progressRepository.GetByEnrollmentAndLessonAsync(enrollmentId, lessonId);
 
         if (progress == null) return null;
 
@@ -22,6 +21,9 @@ public class ProgressService(IProgressRepository progressRepository, ILessonRepo
             EnrollmentId = progress.EnrollmentId,
             LessonId = progress.LessonId,
             WatchedPosition = progress.WatchedPosition,
+            AiSummary = progress.AiSummary,
+            AiSummaryStatus = progress.AiSummaryStatus,
+            Transcript = progress.Transcript,
             IsCompleted = progress.IsCompleted,
             UpdatedAt = progress.UpdatedAt
         };
@@ -29,8 +31,7 @@ public class ProgressService(IProgressRepository progressRepository, ILessonRepo
 
     public async Task<IEnumerable<ProgressDTO>> GetCourseProgressAsync(int enrollmentId)
     {
-        var progresses =
-            await _progressRepository.GetByEnrollmentIdAsync(enrollmentId);
+        var progresses = await _progressRepository.GetByEnrollmentIdAsync(enrollmentId);
 
         return progresses.Select(p => new ProgressDTO
         {
@@ -43,11 +44,7 @@ public class ProgressService(IProgressRepository progressRepository, ILessonRepo
         });
     }
 
-    public async Task UpdateWatchedPositionAsync(
-        int enrollmentId,
-        int lessonId,
-        int watchedPosition
-    )
+    public async Task UpdateWatchedPositionAsync(int enrollmentId, int lessonId, int watchedPosition)
     {
         await _progressRepository.UpdateWatchedPositionAsync(
             enrollmentId,

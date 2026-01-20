@@ -14,5 +14,9 @@ public class LessonProgress
     public int WatchedPosition { get; set; }
     public bool IsCompleted { get; set; }
 
+    public string? Transcript { get; set; }
+    public string? AiSummary { get; set; }
+    public AiSummaryStatus AiSummaryStatus { get; set; } = AiSummaryStatus.None;
+
     public DateTime UpdatedAt { get; set; }
 }
