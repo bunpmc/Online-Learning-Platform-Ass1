@@ -1,31 +1,42 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Online_Learning_Platform_Ass1.Data.Database.Entities;
 
-public enum AiSummaryStatus
-{
-    None = 0,
-    Processing = 1,
-    Done = 2,      
-    Failed = 3
-}
-
+[Table("Lessons")]
 public class Lesson
 {
+    [Key]
+    [Column("lesson_id")]
+    public Guid Id { get; set; }
 
-    public int Id { get; set; }
-    public int ModuleId { get; set; }
-    public string Title { get; set; } = string.Empty;
-    public string Content { get; set; } = string.Empty;
+    [Column("module_id")]
+    public Guid ModuleId { get; set; }
 
-    public string VideoUrl { get; set; } = string.Empty;
+    [ForeignKey(nameof(ModuleId))]
+    public Module Module { get; set; } = null!;
 
-    public int Duration { get; set; }
+    [Required]
+    [MaxLength(200)]
+    [Column("title")]
+    public string Title { get; set; } = null!;
+
+    [Required]
+    [MaxLength(50)]
+    [Column("type")]
+    public string Type { get; set; } = "video"; // video, text, quiz
+
+    [Column("content_url")]
+    public string? ContentUrl { get; set; } // For video URL or Text content blob/link
+
+    [Column("duration")]
+    public int? Duration { get; set; } // In seconds/minutes
+
+    [Column("order_index")]
     public int OrderIndex { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public CourseModule? Module { get; set; }
+
+    public ICollection<LessonProgress> Progresses { get; set; } = new List<LessonProgress>();
+    // One-to-One or One-to-Many relation with Quiz? ERD usually shows Lesson 1-N Quiz or Quiz linked to Lesson.
+    // Based on ERD: Quizzes table has lesson_id FK.
+    public ICollection<Quiz> Quizzes { get; set; } = new List<Quiz>();
 }

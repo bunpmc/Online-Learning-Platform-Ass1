@@ -43,6 +43,11 @@ builder.Services.AddScoped<IModuleRepository, ModuleRepository>();
 builder.Services.AddScoped<ILessonRepository, LessonRepository>();
 builder.Services.AddScoped<IProgressRepository, ProgressRepository>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<ILearningPathRepository, LearningPathRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 // Add services
 builder.Services.AddScoped<IUserService, UserService>();
@@ -61,6 +66,10 @@ builder.Services.AddHttpClient<ITranscriptService, TranscriptService>(client =>
 });
 
 
+builder.Services.AddScoped<ICourseService, CourseService>();
+builder.Services.AddScoped<ILearningPathService, LearningPathService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IVnPayService, VnPayService>();
 
 var app = builder.Build();
 

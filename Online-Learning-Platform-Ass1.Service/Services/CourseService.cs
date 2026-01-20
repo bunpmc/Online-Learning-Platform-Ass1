@@ -1,40 +1,74 @@
 using Online_Learning_Platform_Ass1.Data.Repositories.Interfaces;
 using Online_Learning_Platform_Ass1.Service.DTOs.Course;
+using Online_Learning_Platform_Ass1.Service.DTOs.Category;
 using Online_Learning_Platform_Ass1.Service.Services.Interfaces;
+using Online_Learning_Platform_Ass1.Data.Database.Entities;
 
 namespace Online_Learning_Platform_Ass1.Service.Services;
-public class CourseService (ICourseRepository courseRepository) : ICourseService
 {
-    private readonly ICourseRepository _courseRepository = courseRepository;
-    public async Task<IEnumerable<CourseDTO>> GetAllAsync()
     {
-        var courses = await _courseRepository.GetAllAsync();
-
-        return courses.Select(c => new CourseDTO
         {
             Id = c.Id,
             Title = c.Title,
             Author = c.Author,
             Description = c.Description,
-            PictureUrl = c.PictureUrl,
-            CreatedAt = c.CreatedAt
         });
     }
 
-    public async Task<CourseDTO?> GetByIdAsync(int courseId)
     {
-        var c = await _courseRepository.GetByIdAsync(courseId);
-        if (c == null) return null;
-
-        return new CourseDTO
         {
             Id = c.Id,
             Title = c.Title,
             Author = c.Author,
             Description = c.Description,
-            PictureUrl = c.PictureUrl,
-            CreatedAt = c.CreatedAt
-        };
     }
 
+    public async Task<CourseDetailViewModel?> GetCourseDetailsAsync(Guid id, Guid? userId = null)
+    {
+        var course = await courseRepository.GetByIdAsync(id);
+        if (course == null) return null;
+
+        var isEnrolled = false;
+        if (userId.HasValue)
+        {
+            isEnrolled = await enrollmentRepository.IsEnrolledAsync(userId.Value, id);
+        }
+
+        return new CourseDetailViewModel
+        {
+            Id = course.Id,
+            Title = course.Title,
+            Description = course.Description,
+            Price = course.Price,
+            ImageUrl = course.ImageUrl,
+            InstructorName = course.Instructor.Username,
+            CategoryName = course.Category.Name,
+            IsEnrolled = isEnrolled,
+            Modules = course.Modules.Select(m => new ModuleViewModel
+            {
+                Id = m.Id,
+                Title = m.Title,
+                Lessons = m.Lessons.Select(l => new LessonViewModel
+                {
+                    Id = l.Id,
+                    Title = l.Title,
+                    VideoUrl = l.ContentUrl // Map ContentUrl to VideoUrl
+                })
+            })
+        };
+    }
+    public async Task<IEnumerable<CourseViewModel>> GetEnrolledCoursesAsync(Guid userId)
+    {
+        var enrollments = await enrollmentRepository.GetStudentEnrollmentsAsync(userId);
+        return enrollments.Select(e => new CourseViewModel
+        {
+            Id = e.Course.Id,
+            Title = e.Course.Title,
+            Description = e.Course.Description,
+            Price = e.Course.Price,
+            ImageUrl = e.Course.ImageUrl,
+            InstructorName = e.Course.Instructor?.Username ?? "Unknown",
+            CategoryName = e.Course.Category?.Name ?? "General"
+        });
+    }
 }
