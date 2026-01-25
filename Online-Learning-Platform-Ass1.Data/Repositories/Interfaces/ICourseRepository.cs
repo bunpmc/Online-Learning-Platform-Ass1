@@ -6,7 +6,7 @@ public interface ICourseRepository
 {
     Task<Course?> GetByIdAsync(Guid id);
     Task<IEnumerable<Course>> GetAllAsync();
-    Task<IEnumerable<Course>> GetFeaturableCoursesAsync(int count);
     Task<IEnumerable<Course>> GetCoursesAsync(string? searchTerm = null, Guid? categoryId = null);
+    Task<IEnumerable<Course>> GetFeaturableCoursesAsync(int count);
     Task<int> SaveChangesAsync();
 }

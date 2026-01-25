@@ -5,9 +5,11 @@ namespace Online_Learning_Platform_Ass1.Service.Services.Interfaces;
 
 public interface ICourseService
 {
+    Task<IEnumerable<CourseDTO>> GetAllAsync();
+    Task<CourseDTO?> GetByIdAsync(Guid id);
+
     Task<IEnumerable<CourseViewModel>> GetFeaturedCoursesAsync();
-    Task<IEnumerable<CourseViewModel>> GetAllCoursesAsync(string? searchTerm = null, Guid? categoryId = null);
-    Task<CourseDetailViewModel?> GetCourseDetailsAsync(Guid id, Guid? userId = null);
+    Task<IEnumerable<CourseViewModel>> GetAllCoursesAsync(string? searchTerm, Guid? categoryId);
+    Task<CourseDetailViewModel?> GetCourseDetailsAsync(Guid id, Guid? userId);
     Task<IEnumerable<CourseViewModel>> GetEnrolledCoursesAsync(Guid userId);
-    Task<IEnumerable<CategoryViewModel>> GetAllCategoriesAsync();
 }
