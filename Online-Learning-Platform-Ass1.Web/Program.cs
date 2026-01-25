@@ -39,6 +39,11 @@ builder.Services.AddDbContext<OnlineLearningContext>(options =>
 // Add repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<IModuleRepository, ModuleRepository>();
+builder.Services.AddScoped<ILessonRepository, LessonRepository>();
+builder.Services.AddScoped<IProgressRepository, ProgressRepository>();
+builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ILearningPathRepository, LearningPathRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
@@ -46,6 +51,21 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 // Add services
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICourseService, CourseService>();
+builder.Services.AddScoped<IModuleService, ModuleService>();
+builder.Services.AddScoped<ILessonService, LessonService>();
+builder.Services.AddScoped<IProgressService, ProgressService>();
+builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+
+// Add HttpClient services
+builder.Services.AddHttpClient<IAiLessonService, AiLessonService>();
+builder.Services.AddHttpClient<ITranscriptService, TranscriptService>();
+builder.Services.AddHttpClient<ITranscriptService, TranscriptService>(client =>
+{
+    client.Timeout = TimeSpan.FromMinutes(10);
+});
+
+
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ILearningPathService, LearningPathService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
@@ -64,8 +84,6 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapControllers();
 
 app.MapStaticAssets();
 

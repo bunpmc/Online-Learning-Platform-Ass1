@@ -2,8 +2,13 @@ using Microsoft.EntityFrameworkCore;
 using Online_Learning_Platform_Ass1.Data.Database;
 using Online_Learning_Platform_Ass1.Data.Database.Entities;
 using Online_Learning_Platform_Ass1.Data.Repositories.Interfaces;
+using Online_Learning_Platform_Ass1.Data.Database.Entities;
 
 namespace Online_Learning_Platform_Ass1.Data.Repositories;
+public class CourseRepository : ICourseRepository
+{
+    private readonly List<Course> _courses = new();
+    private int _currentId = 1;
 
 public class CourseRepository(OnlineLearningContext context) : ICourseRepository
 {
